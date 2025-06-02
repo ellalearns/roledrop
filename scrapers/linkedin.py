@@ -2,12 +2,12 @@ import logging
 from linkedin_jobs_scraper import LinkedinScraper
 from linkedin_jobs_scraper.events import Events, EventData, EventMetrics
 from linkedin_jobs_scraper.query import Query, QueryOptions, QueryFilters
-from linkedin_jobs_scraper.filters import RelevanceFilters
+from linkedin_jobs_scraper.filters import RelevanceFilters, OnSiteOrRemoteFilters
 
-logging.basicConfig(level=logging.INFO)
+# logging.basicConfig(level=logging.INFO)
 
 def on_data(data: EventData):
-    print("[ON DATA]", data.title, data.company_link, data.date, len(data.description))
+    print("[ON DATA]", data.title, data.link.split("?")[0], data.date, len(data.description))
 
 
 def on_metrics(metrics: EventMetrics):
@@ -26,7 +26,7 @@ scraper = LinkedinScraper(
     chrome_options=None,
     headless=True,
     max_workers=1,
-    slow_mo=2,
+    slow_mo=3,
     page_load_timeout=30,
 )
 
@@ -37,25 +37,25 @@ scraper.on(Events.END, on_end)
 queries = [
     Query(
         options=QueryOptions(
-            limit=5,
+            limit=30,
             locations=["Worldwide"],
+            apply_link=False,
+            filters=QueryFilters(
+                relevance=RelevanceFilters.RECENT,
+                on_site_or_remote=OnSiteOrRemoteFilters.REMOTE
+            )
+        )
+    ),
+    Query(
+        options=QueryOptions(
+            limit=10,
+            locations=["Nigeria"],
             apply_link=False,
             filters=QueryFilters(
                 relevance=RelevanceFilters.RECENT
             )
         )
-    ),
-    # Query(
-    #     query="",
-    #     options=QueryOptions(
-    #         locations=["Nigeria"],
-    #         apply_link=True,
-    #         limit=5,
-    #         filters=QueryFilters(
-    #             relevance=RelevanceFilters.RECENT
-    #         )
-    #     )
-    # )
+    )
 ]
 
 try:
