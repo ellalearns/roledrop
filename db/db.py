@@ -32,8 +32,8 @@ def init_db():
 def add_user_to_db(user_id):
 
     date_joined = datetime.datetime.now().isoformat()
-    sites = "linkedin,"
-    categories = "all,"
+    sites = "linkedin "
+    categories = ""
 
     conn = sqlite3.connect("rd_users.dp")
     cursor = conn.cursor()
@@ -99,3 +99,13 @@ def check_user(user_id):
         return user[0]
     
     return None
+
+
+def edit_user_categories(categories, user_id):
+    conn = sqlite3.connect("rd_users.db")
+    cursor = conn.cursor()
+
+    cursor.execute("UPDATE users SET categories = ? WHERE id = ?", (categories, user_id,))
+
+    conn.commit()
+    conn.close()
