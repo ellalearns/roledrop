@@ -3,8 +3,11 @@ from linkedin_jobs_scraper import LinkedinScraper
 from linkedin_jobs_scraper.events import Events, EventData, EventMetrics
 from linkedin_jobs_scraper.query import Query, QueryOptions, QueryFilters
 from linkedin_jobs_scraper.filters import RelevanceFilters, OnSiteOrRemoteFilters
+from dotenv import load_dotenv
 
 # logging.basicConfig(level=logging.INFO)
+
+load_dotenv(override=True)
 
 def on_data(data: EventData):
     print("[ON DATA]", data.title, data.link.split("?")[0], data.date, len(data.description))
