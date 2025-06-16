@@ -70,7 +70,7 @@ async def run_linkedin():
 
         print("sleeping")
         jobs = []
-        await asyncio.sleep(30)
+        await asyncio.sleep(300)
 
 
 async def main():

@@ -63,7 +63,7 @@ def get_linkedin_jobs():
     queries = [
         Query(
             options=QueryOptions(
-                limit=3,
+                limit=30,
                 locations=["Worldwide"],
                 apply_link=False,
                 filters=QueryFilters(
@@ -74,7 +74,7 @@ def get_linkedin_jobs():
         ),
         Query(
             options=QueryOptions(
-                limit=3,
+                limit=10,
                 locations=["Nigeria"],
                 apply_link=False,
                 filters=QueryFilters(
