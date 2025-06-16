@@ -28,7 +28,7 @@ def get_linkedin_jobs():
             data.date,
             data.apply_link,
             data.job_id,
-            data.link.split("?")[0]
+            data.link.split("?")[0],
         ])
         # print("[ON DATA]", data.title, data.link.split("?")[0], data.date, len(data.description))
         # print(job_list)
@@ -63,7 +63,7 @@ def get_linkedin_jobs():
     queries = [
         Query(
             options=QueryOptions(
-                limit=30,
+                limit=3,
                 locations=["Worldwide"],
                 apply_link=False,
                 filters=QueryFilters(
@@ -74,7 +74,7 @@ def get_linkedin_jobs():
         ),
         Query(
             options=QueryOptions(
-                limit=10,
+                limit=3,
                 locations=["Nigeria"],
                 apply_link=False,
                 filters=QueryFilters(
@@ -86,6 +86,5 @@ def get_linkedin_jobs():
 
     scraper.run(queries)
     final_list = current_job_list[:]
-    # print("final list    ", final_list)
 
     return final_list
