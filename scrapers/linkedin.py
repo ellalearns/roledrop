@@ -4,6 +4,7 @@ from linkedin_jobs_scraper.events import Events, EventData, EventMetrics
 from linkedin_jobs_scraper.query import Query, QueryOptions, QueryFilters
 from linkedin_jobs_scraper.filters import RelevanceFilters, OnSiteOrRemoteFilters
 from dotenv import load_dotenv
+from selenium.webdriver.chrome.options import Options
 
 # logging.basicConfig(level=logging.INFO)
 
@@ -46,10 +47,16 @@ def get_linkedin_jobs():
         job_list = []
         print("[ON END]")
 
+    chrome_options = Options()
+    chrome_options.binary_location = "/usr/bin/chromium-browser"
+    chrome_options.add_argument("--headless")
+    chrome_options.add_argument("--no-sandbox")
+    chrome_options.add_argument("--disable-dev-shm-usage")
+
     scraper = LinkedinScraper(
         chrome_executable_path=None,
-        chrome_binary_location=None,
-        chrome_options=None,
+        chrome_binary_location="/usr/bin/chromium-browser",
+        chrome_options=chrome_options,
         headless=True,
         max_workers=1,
         slow_mo=3,
