@@ -3,15 +3,15 @@ from telegram.ext import ContextTypes, CommandHandler, CallbackQueryHandler
 import logging
 from server.server import application
 import json
-from db.db import edit_user_categories
+from db.db import edit_user_categories, add_user_to_db
 
 
-logging.basicConfig(
-    format="%(asctime)s - %(name)s - %(levelname)s - %(messages)s",
-    level=logging.INFO
-)
-logging.getLogger("httpx").setLevel(logging.WARNING)
-logger = logging.getLogger(__name__)
+# logging.basicConfig(
+#     format="%(asctime)s - %(name)s - %(levelname)s - %(messages)s",
+#     level=logging.INFO
+# )
+# logging.getLogger("httpx").setLevel(logging.WARNING)
+# logger = logging.getLogger(__name__)
 
 categories_list = [
     "content writing",
@@ -75,6 +75,7 @@ async def start(update: Update, context: ContextTypes.DEFAULT_TYPE) -> None:
     """
     user = update.effective_user
     await update.message.reply_text(f"Hi {user.first_name}")
+    add_user_to_db(user.id)
     context.user_data["categories"] = set()
     await edit(update, context)
 

@@ -1,5 +1,6 @@
 import sqlite3
 import datetime
+import json
 
 
 def init_db():
@@ -32,10 +33,10 @@ def init_db():
 def add_user_to_db(user_id):
 
     date_joined = datetime.datetime.now().isoformat()
-    sites = "linkedin "
-    categories = ""
+    sites =["linkedin",]
+    categories = ["others",]
 
-    conn = sqlite3.connect("rd_users.dp")
+    conn = sqlite3.connect("rd_users.db")
     cursor = conn.cursor()
 
     cursor.execute("""
@@ -46,14 +47,14 @@ def add_user_to_db(user_id):
                    date_subscribed,
                    sites,
                    categories
-                   )
+                   ) VALUES (?, ?, ?, ?, ?, ?)
     """, (
         user_id,
         "trial",
         date_joined,
         date_joined,
-        sites,
-        categories,
+        json.dumps(sites),
+        json.dumps(categories),
     ))
 
     conn.commit()
@@ -109,3 +110,16 @@ def edit_user_categories(categories, user_id):
 
     conn.commit()
     conn.close()
+
+
+def get_all_users():
+    conn = sqlite3.connect("rd_users.db")
+    cursor = conn.cursor()
+
+    cursor.execute("SELECT * FROM users")
+    users = cursor.fetchall()
+
+    # cursor.close()
+    conn.close()
+
+    return users
