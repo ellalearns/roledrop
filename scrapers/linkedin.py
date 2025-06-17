@@ -52,6 +52,7 @@ def get_linkedin_jobs():
     chrome_options.add_argument("--headless")
     chrome_options.add_argument("--no-sandbox")
     chrome_options.add_argument("--disable-dev-shm-usage")
+    chrome_options.add_argument("--proxy-server=http://102.23.228.240:8080")
 
     scraper = LinkedinScraper(
         chrome_executable_path=None,

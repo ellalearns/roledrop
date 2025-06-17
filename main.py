@@ -8,9 +8,14 @@ import json
 from deps.deps import parse_linkedin_jobs, return_unseen_jobs
 from telegram.helpers import escape_markdown
 from telegram.error import BadRequest, TimedOut
+from dotenv import load_dotenv
+import os
 
 
 nest_asyncio.apply()
+
+load_dotenv(override=True)
+LI_AT = os.getenv("LI_AT_COOKIE")
 
 
 application = main_bot()
@@ -74,9 +79,11 @@ async def main():
     server = uvicorn.Server(config)
 
     server_run = asyncio.create_task(server.serve())
-    # linkedin = asyncio.create_task(run_linkedin())
 
-    await asyncio.gather(server_run)
+    print("cookie", LI_AT)
+    linkedin = asyncio.create_task(run_linkedin())
+
+    await asyncio.gather(server_run, linkedin)
 
 if __name__=="__main__":
     init_db()
