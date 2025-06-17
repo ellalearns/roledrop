@@ -63,7 +63,7 @@ def get_linkedin_jobs():
         slow_mo=3,
         page_load_timeout=30,
     )
-    scraper.add_proxy("--proxy-server=http://102.23.228.240:8080")
+    scraper.add_proxy("http://102.23.228.240:8080")
 
     scraper.on(Events.DATA, on_data)
     scraper.on(Events.ERROR, on_error)
