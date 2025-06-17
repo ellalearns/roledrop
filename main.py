@@ -74,9 +74,9 @@ async def main():
     server = uvicorn.Server(config)
 
     server_run = asyncio.create_task(server.serve())
-    # linkedin = asyncio.create_task(run_linkedin())
+    linkedin = asyncio.create_task(run_linkedin())
 
-    await asyncio.gather(server_run)
+    await asyncio.gather(server_run, linkedin)
 
 if __name__=="__main__":
     init_db()

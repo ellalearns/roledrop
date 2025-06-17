@@ -1,0 +1,27 @@
+[phases.setup]
+aptPkgs = [
+  "chromium-browser",
+  "wget",
+  "unzip",
+  "ca-certificates",
+  "libnss3",
+  "libxss1",
+  "libx11-xcb1",
+  "libxcomposite1",
+  "libxdamage1",
+  "libxrandr2",
+  "libgbm1",
+  "libgtk-3-0",
+  "fonts-liberation",
+  "libappindicator3-1",
+  "xdg-utils",
+  "libasound2t64"
+]
+
+[phases.build]
+cmds = [
+  "wget -q https://storage.googleapis.com/chrome-for-testing-public/137.0.7151.105/linux64/chromedriver-linux64.zip -O /tmp/chromedriver.zip",
+  "unzip -o /tmp/chromedriver.zip -d /tmp",
+  "mv /tmp/chromedriver-linux64/chromedriver /usr/local/bin/chromedriver",
+  "chmod +x /usr/local/bin/chromedriver"
+]
