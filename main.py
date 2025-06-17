@@ -67,7 +67,7 @@ async def run_linkedin():
 async def main():
     config = uvicorn.Config(
         "server.server:app",
-        host="127.0.0.1",
+        host="0.0.0.0",
         port=8000,
         reload=True
         )
