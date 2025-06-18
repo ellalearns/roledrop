@@ -87,10 +87,10 @@ async def new_jobs(all_jobs: List[List[str]]):
         for cat in user_cats:
             available_jobs = grouped_jobs[cat]
             for job in available_jobs:
-                job_desc = escape_markdown("".join(job[3][:2000]).replace("\n\n", "\n"), version=2)
+                job_desc = escape_markdown("".join(job[5][:2000]).replace("\n\n", "\n"), version=2)
                 try:
                     await application.bot.send_message(chat_id=user[0],
-                                                    text=f"""[{cat}]\n*{job[0]}*\n{job[-1]}\n{job_desc}\n{job[1]}
+                                                    text=f"""[{cat}]\n*{job[0]}*\n{job[-1]}\n{job[2]}\n{job[3]}\n{job[4]}\n{job_desc}\n{job[1]}
                                                         """,
                                                     parse_mode="Markdown")
                 except BadRequest as e:
