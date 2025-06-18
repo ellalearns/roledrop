@@ -5,10 +5,12 @@ from linkedin_jobs_scraper.query import Query, QueryOptions, QueryFilters
 from linkedin_jobs_scraper.filters import RelevanceFilters, OnSiteOrRemoteFilters
 from dotenv import load_dotenv
 from selenium.webdriver.chrome.options import Options
+import os
 
 # logging.basicConfig(level=logging.INFO)
 
 load_dotenv(override=True)
+LI_AT = os.getenv("LI_AT_COOKIE")
 
 def get_linkedin_jobs():
     """
@@ -52,7 +54,7 @@ def get_linkedin_jobs():
     chrome_options.add_argument("--headless")
     chrome_options.add_argument("--no-sandbox")
     chrome_options.add_argument("--disable-dev-shm-usage")
-    # chrome_options.add_argument("--proxy-server=http://102.23.228.240:8080")
+    chrome_options.add_argument("--proxy-server=http://102.23.228.240:8080")
 
     scraper = LinkedinScraper(
         chrome_executable_path=None,
@@ -63,7 +65,6 @@ def get_linkedin_jobs():
         slow_mo=3,
         page_load_timeout=30,
     )
-    scraper.add_proxy("http://102.23.228.240:8080")
 
     scraper.on(Events.DATA, on_data)
     scraper.on(Events.ERROR, on_error)

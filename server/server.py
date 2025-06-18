@@ -6,6 +6,8 @@ from telegram.ext import Application
 from fastapi.middleware.cors import CORSMiddleware
 from http import HTTPStatus
 from telegram import Update
+from typing import List
+from main import send_linkedin
 
 
 load_dotenv(override=True)
@@ -63,10 +65,15 @@ async def root():
         "status": "OK"
     }
 
-
 @app.post("/telegram/webhook/")
 async def telegram_webhook(request: Request):
     data = await request.json()
     update = Update.de_json(data, application.bot)
     await application.process_update(update)
     return Response(status_code=HTTPStatus.OK)
+
+@app.post("/send_linkedin_jobs")
+async def new_jobs(all_jobs: List[dict]):
+    """
+    """
+    await send_linkedin(all_jobs)
