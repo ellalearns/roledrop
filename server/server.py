@@ -75,7 +75,7 @@ async def telegram_webhook(request: Request):
     await application.process_update(update)
     return Response(status_code=HTTPStatus.OK)
 
-@app.post("/send_linkedin_jobs")
+@app.post("/send_linkedin_jobs/")
 async def new_jobs(all_jobs: List[dict]):
     """
     """
