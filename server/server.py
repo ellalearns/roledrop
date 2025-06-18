@@ -76,7 +76,7 @@ async def telegram_webhook(request: Request):
     return Response(status_code=HTTPStatus.OK)
 
 @app.post("/send_linkedin_jobs/")
-async def new_jobs(all_jobs: list):
+async def new_jobs(all_jobs: List[List[str]]):
     """
     """
     grouped_jobs = parse_linkedin_jobs(all_jobs)
