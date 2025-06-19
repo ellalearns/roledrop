@@ -2,7 +2,7 @@ from telegram import Update, InlineKeyboardButton, InlineKeyboardMarkup
 from telegram.ext import ContextTypes, CommandHandler, CallbackQueryHandler, ConversationHandler, MessageHandler, filters
 from server.server import application
 import json
-from db.db import edit_user_categories, add_user_to_db, verify_subscription, delete_user_by_id, check_user, get_user_info
+from db.db import edit_user_categories, add_user_to_db, verify_subscription, delete_user_by_id, check_user, get_user_info, get_user_categories
 from telegram.error import Forbidden, TimedOut
 from telegram.constants import ParseMode
 from dotenv import load_dotenv
@@ -88,6 +88,11 @@ async def start(update: Update, context: ContextTypes.DEFAULT_TYPE) -> None:
         add_user_to_db(user.id)
         context.user_data["categories"] = set()
         await edit(update, context)
+        await update.message.reply_text(
+            f"""Welcome to Roledrop 🤗\n\nRoledrop monitors job sites and sends you job notifications immeditely a new one is posted. \nRight now, we're monitoring LinkedIn. But we are working on adding other sites including Wellfound, X alerts, Y combinator, and individual Nigerian company job boards. \nEvery day, thousands of jobs are posted on LinkedIn and other job sites. \nYou now get to have a front seat and be among the first to submit an application and be considered.
+            \nRight Now, you're on a free trial that lasts for 2 days. \n After that, you can pay one thousand naira only (1,000) to have FULL access for 30 days. \n YOUR NEXT JOB IS ON THE WAY 💕\n\nSend /info for information about your roledrop profile.\n\nSend /pay to pay 1,000 naira for one month access (30 days).\nFinally, feel free to send us an email at roledropapp@gmail.com\n\nWelcome, once again.\nSettle in and wait for the job notifications to roll in. Enjoy 😉""",
+            reply_markup=keyboard
+        )
 
 
 async def edit(update: Update, context: ContextTypes.DEFAULT_TYPE) -> None:
@@ -97,8 +102,20 @@ async def edit(update: Update, context: ContextTypes.DEFAULT_TYPE) -> None:
     user runs /edit
     """
     user = update.effective_user
+    edit_text = f"Edit your job types and websites here. If your job type is not listed here, select others, it will be included there. We are working on grouping jobs better and adding more websites. Feel free to send suggestions to roledropapp@gmail.com"
+    edit_categories = get_user_categories(user.id)
+    context.user_data["categories"] = edit_categories
+    if update.callback_query:
+        query = update.callback_query
+        await query.answer()
+        await update.effective_user.send_message(f"/edit")
+        await context.bot.send_message(
+            chat_id=update.effective_chat.id,
+            text=edit_text,
+            reply_markup=get_user_category_keyboard(context.user_data["categories"])
+        )
     try:
-        await update.message.reply_text(f"Edit your job types and websites here. If your job type is not listed here, select others, it will be included there. We are working on grouping jobs better and adding more websites. Feel free to send suggestions to roledropapp@gmail.com", reply_markup=get_user_category_keyboard(context.user_data.setdefault("categories", set())))
+        await update.message.reply_text(edit_text, reply_markup=get_user_category_keyboard(context.user_data["categories"]))
     except Forbidden:
         delete_user_by_id(user.id)
     except TimedOut:
@@ -308,6 +325,9 @@ async def button_handler(update: Update, context:ContextTypes.DEFAULT_TYPE) -> N
     
     elif cmd == "help":
         await help(update, context)
+    
+    elif cmd == "edit":
+        await edit(update, context)
 
 
 async def handle_invalid_messages(update: Update, context: ContextTypes.DEFAULT_TYPE) -> None:

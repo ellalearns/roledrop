@@ -34,7 +34,7 @@ def add_user_to_db(user_id):
 
     date_joined = datetime.datetime.now().isoformat()
     sites =["linkedin",]
-    categories = ["others",]
+    categories = ["others","content writing","software development","virtual assistant","customer service","data entry","design","ai/ml engineering","project management", "social media management"]
 
     conn = sqlite3.connect("rd_users.db")
     cursor = conn.cursor()
@@ -110,6 +110,19 @@ def edit_user_categories(categories, user_id):
 
     conn.commit()
     conn.close()
+
+
+def get_user_categories(user_id):
+    conn = sqlite3.connect("rd_users.db")
+    cursor = conn.cursor()
+
+    cursor.execute("SELECT categories FROM users WHERE id = ?", (user_id,))
+    categories = cursor.fetchone()
+
+    if categories is None or categories[0] is None:
+        return set()
+
+    return set(json.loads(categories[0]))
 
 
 def get_all_users():

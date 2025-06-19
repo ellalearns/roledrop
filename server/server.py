@@ -8,7 +8,7 @@ from http import HTTPStatus
 from telegram import Update, BotCommand
 from typing import List
 from deps.deps import parse_linkedin_jobs, format_text_as_html
-from db.db import get_all_users, delete_user_by_id, count_users
+from db.db import get_all_users, delete_user_by_id, count_users, complete_payment
 import json
 from telegram.helpers import escape_markdown
 from telegram.error import BadRequest, TimedOut, Forbidden
@@ -48,7 +48,7 @@ async def lifespan(_: FastAPI):
     to run each time server starts and stops
     """
     await application.bot.set_my_commands(commands)
-    
+
     await application.bot.set_webhook(
         WEBHOOK_URL,
         drop_pending_updates=True,
@@ -158,4 +158,14 @@ async def send_email():
         password=EMAIL_PASSWORD
     )
 
+
+@app.post("/complete_payment/")
+async def complete_payment_be(request: Request):
+    data = await request.json()
+    id = int(data["id"])
+    reference = data["reference"]
+    complete_payment(id, reference)
+    return {
+        "status": "ok"
+    }
 
