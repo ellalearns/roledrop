@@ -47,3 +47,4 @@ def return_unseen_jobs(all_jobs, lw, lng):
     
     return unseen_jobs
             
+

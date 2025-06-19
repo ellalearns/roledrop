@@ -13,10 +13,6 @@ import os
 
 nest_asyncio.apply()
 
-load_dotenv(override=True)
-LI_AT = os.getenv("LI_AT_COOKIE")
-
-
 application = main_bot()
 
 async def main():
