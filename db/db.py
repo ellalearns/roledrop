@@ -234,7 +234,7 @@ def complete_payment(id: int, reference: str):
 def set_expired():
     datenow = datetime.datetime.now()
 
-    conn = sqlite3.connect("users.db", timeout=30)
+    conn = sqlite3.connect("rd_users.db")
     cursor = conn.cursor()
 
     cursor.execute("""SELECT * FROM users WHERE status != ?""", ("expired",)) 
@@ -252,6 +252,4 @@ def set_expired():
     conn.commit()
     conn.close()
 
-    return {
-        "status": "ok"
-    }
+    return "ok"

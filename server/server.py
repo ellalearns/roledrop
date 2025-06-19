@@ -178,21 +178,21 @@ async def complete_payment_be(request: Request):
 
 
 @app.get("/expired/")
-async def get_expired_users():
+async def remind_unpaid_users():
     """
     """
     set_expired()
     ids = get_expired_users()
     for id in ids:
         await application.bot.send_message(
-            chat_id=id,
+            chat_id=int(id[0]),
             text="Hi! \nA gentle reminder to subscribe and keep getting the latest jobs to apply to. \nBe among the first to apply for jobs and get considered for interviews. \n1,000 for one month. Enjoy 😉",
             reply_markup=keyboard
         )
     ids = get_trial_users()
     for id in ids:
         await application.bot.send_message(
-            chat_id=id,
+            chat_id=int(id[0]),
             text="""Hi! Hope you're enjoying Roledrop 🤗\nIn a few days, your free trial will end. \nA gentle reminder to subscribe and keep getting the latest jobs to apply to. \nBe among the first to apply for jobs and get considered for interviews. \n1,000 for one month. Enjoy 😉""",
             reply_markup=keyboard
         )
