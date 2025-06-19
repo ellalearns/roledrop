@@ -84,7 +84,7 @@ async def telegram_webhook(request: Request):
 
 @app.get("/count/")
 async def user_count():
-    total_count, status_count = await asyncio.to_thread(count_users())
+    total_count, status_count = count_users()
     count_dict = {"total": total_count}
     count_dict.update(status_count)
     
