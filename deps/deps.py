@@ -1,5 +1,14 @@
 from constants import categories_list
 import copy
+import aiohttp
+from dotenv import load_dotenv
+import os
+
+load_dotenv(override=True)
+payment_gateway = os.getenv("PAYMENT_GATEWAY")
+authorization = "Bearer " + os.getenv("SECRET_KEY")
+content_type = os.getenv("CONTENT_TYPE")
+
 
 def parse_linkedin_jobs(jobs):
     """
@@ -60,3 +69,19 @@ def format_text_as_html(text: str):
                 html_lines.append(f"{word}")
             # html_lines.append(f"{line.strip()}\n")
     return "\n".join(html_lines)
+
+
+async def make_payment(data):
+    """
+    """
+    async with aiohttp.ClientSession() as session:
+        async with session.post(
+            url=payment_gateway,
+            headers={
+                "Authorization": authorization,
+                "Content-Type": content_type
+            },
+            json=data
+        ) as response:
+            result = await response.json()
+            return result["data"]["access_code"]

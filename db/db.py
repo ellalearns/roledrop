@@ -150,3 +150,68 @@ def count_users():
     total_count = sum(status_count.values())
 
     return total_count, status_count
+
+
+def verify_subscription(id):
+    """
+    """
+    conn = sqlite3.connect("rd_users.db", timeout=30)
+    cursor = conn.cursor()
+
+    cursor.execute("""SELECT * FROM users WHERE id = ?""", (id,))
+    user = cursor.fetchone()
+
+    if user[1] != "paid":
+        return False
+    
+    return True
+
+
+def complete_payment(id: int, reference: str):
+    conn = sqlite3.connect("rd_users.db", timeout=30)
+    cursor = conn.cursor()
+
+    cursor.execute("""SELECT * FROM payments WHERE id = ?""", (id,))
+    payment = cursor.fetchone()
+    
+    if payment == None:
+        cursor.execute("""
+        INSERT INTO payments (id, reference) VALUES (?, ?)
+        """, (id, reference,))
+    else:
+        cursor.execute("""UPDATE payments SET reference = ? WHERE id = ?""", (reference, id))
+    
+    cursor.execute("""UPDATE users SET status = ?, date_subscribed = ? WHERE id = ?""", ("paid", datetime.datetime.now().isoformat(), id))
+    
+    conn.commit()
+    conn.close()
+
+    return {
+        "status": "paid"
+    }
+
+
+def set_expired():
+    datenow = datetime.datetime.now()
+
+    conn = sqlite3.connect("users.db", timeout=30)
+    cursor = conn.cursor()
+
+    cursor.execute("""SELECT * FROM users WHERE status != ?""", ("expired",)) 
+    users = cursor.fetchall()
+    for user in users:
+        if (user[1] == "paid"):
+            days_allowed = datetime.timedelta(days=30)
+            user_time = datetime.datetime.fromisoformat(user[3])
+        elif (user[1] == "trial"):
+            days_allowed = datetime.timedelta(days=2)
+            user_time = datetime.datetime.fromisoformat(user[2])
+        if (datenow - user_time > days_allowed):
+            cursor.execute("""UPDATE users SET status = ? WHERE id = ?""", ("expired", user[0]))
+    
+    conn.commit()
+    conn.close()
+
+    return {
+        "status": "ok"
+    }
