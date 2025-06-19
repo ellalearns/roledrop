@@ -39,7 +39,7 @@ categories_list = [
 
 keyboard = InlineKeyboardMarkup([
     [InlineKeyboardButton("Edit", callback_data="edit")],
-    [InlineKeyboardButton("Pay", callback_data="pay")]
+    [InlineKeyboardButton("Pay", callback_data="pay")],
     [InlineKeyboardButton("Info", callback_data="info")],
     [InlineKeyboardButton("Help", callback_data="help")],
 ])

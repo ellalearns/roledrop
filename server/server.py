@@ -5,7 +5,7 @@ import os
 from telegram.ext import Application
 from fastapi.middleware.cors import CORSMiddleware
 from http import HTTPStatus
-from telegram import Update
+from telegram import Update, BotCommand
 from typing import List
 from deps.deps import parse_linkedin_jobs, format_text_as_html
 from db.db import get_all_users, delete_user_by_id, count_users
@@ -21,6 +21,15 @@ BOT_TOKEN = os.getenv("BOT_TOKEN")
 WEBHOOK_URL = os.getenv("WEBHOOK_URL")
 APP_PASSWORD = os.getenv("APP_PASSWORD")
 EMAIL = os.getenv("EMAIL")
+
+
+commands = [
+    BotCommand("edit", "Edit your job categories"),
+    BotCommand("info", "Show your info"),
+    BotCommand("help", "Get help"),
+    BotCommand("pay", "Pay for one month (30 days)"),
+    BotCommand("verify", "Verify payment")
+]
 
 application = (
     Application
@@ -38,6 +47,8 @@ async def lifespan(_: FastAPI):
     """
     to run each time server starts and stops
     """
+    await application.bot.set_my_commands(commands)
+    
     await application.bot.set_webhook(
         WEBHOOK_URL,
         drop_pending_updates=True,
