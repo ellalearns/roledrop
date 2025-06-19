@@ -54,7 +54,9 @@ def format_text_as_html(text: str):
     for line in lines:
         words = line.strip().split()
         if 0 < len(words) < 4:
-            html_lines.append(f"<h3>{line.strip()}</h3>")
+            html_lines.append(f"<b>{line.strip()}</b>")
         else:
-            html_lines.append(f"<p>{line.strip()}</p>")
+            for word in line.split("."):
+                html_lines.append(f"{word}")
+            # html_lines.append(f"{line.strip()}\n")
     return "\n".join(html_lines)

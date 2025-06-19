@@ -102,10 +102,10 @@ async def new_jobs(all_jobs: List[List[str]]):
         for cat in user_cats:
             available_jobs = grouped_jobs[cat]
             for job in available_jobs:
-                job_desc = format_text_as_html("".join(job[5][:2000]).replace("\n\n", "\n"))
+                job_desc = format_text_as_html("".join(job[5][:3000]).replace("\n", "\n"))
                 try:
                     await application.bot.send_message(chat_id=user[0],
-                                                    text=f"""[{cat}]\n<h2>{job[0]}</h2>\n<p>{job[-1]}</p>\n<p>{job[2]}</p>\n<p>{job[3]}</p>\n<p>{job[4]}</p>\n{job_desc}\n<p>{job[1]}</p>
+                                                    text=f"""{cat}\n💎💎  <b>{job[0]}</b>\n👉  {job[-1]}\n📍  {job[2]}\n{job[3]}\n{job[4]}\n{job_desc}\n👉  {job[1]}\n
                                                         """, parse_mode="HTML")
                 except BadRequest:
                     await application.bot.send_message(chat_id=user[0],
@@ -116,6 +116,7 @@ async def new_jobs(all_jobs: List[List[str]]):
                     print("telegram server timed out. moving on...")
                 except Forbidden:
                     delete_user_by_id(user[0])
+                await asyncio.sleep(1)
 
 
 async def send_email():
