@@ -5,10 +5,10 @@ import os
 from telegram.ext import Application
 from fastapi.middleware.cors import CORSMiddleware
 from http import HTTPStatus
-from telegram import Update, BotCommand
+from telegram import Update, BotCommand, InlineKeyboardButton, InlineKeyboardMarkup
 from typing import List
 from deps.deps import parse_linkedin_jobs, format_text_as_html
-from db.db import get_all_users, delete_user_by_id, count_users, complete_payment
+from db.db import get_all_users, delete_user_by_id, count_users, complete_payment, set_expired, get_expired_users, get_trial_users
 import json
 from telegram.helpers import escape_markdown
 from telegram.error import BadRequest, TimedOut, Forbidden
@@ -30,6 +30,13 @@ commands = [
     BotCommand("pay", "Pay for one month (30 days)"),
     BotCommand("verify", "Verify payment")
 ]
+
+keyboard = InlineKeyboardMarkup([
+    [InlineKeyboardButton("Pay", callback_data="pay")],
+    [InlineKeyboardButton("Edit", callback_data="edit")],
+    [InlineKeyboardButton("Info", callback_data="info")],
+    [InlineKeyboardButton("Help", callback_data="help")],
+])
 
 application = (
     Application
@@ -168,4 +175,25 @@ async def complete_payment_be(request: Request):
     return {
         "status": "ok"
     }
+
+
+@app.get("/expired/")
+async def get_expired_users():
+    """
+    """
+    set_expired()
+    ids = get_expired_users()
+    for id in ids:
+        await application.bot.send_message(
+            chat_id=id,
+            text="Hi! \nA gentle reminder to subscribe and keep getting the latest jobs to apply to. \nBe among the first to apply for jobs and get considered for interviews. \n1,000 for one month. Enjoy 😉",
+            reply_markup=keyboard
+        )
+    ids = get_trial_users()
+    for id in ids:
+        await application.bot.send_message(
+            chat_id=id,
+            text="""Hi! Hope you're enjoying Roledrop 🤗\nIn a few days, your free trial will end. \nA gentle reminder to subscribe and keep getting the latest jobs to apply to. \nBe among the first to apply for jobs and get considered for interviews. \n1,000 for one month. Enjoy 😉""",
+            reply_markup=keyboard
+        )
 

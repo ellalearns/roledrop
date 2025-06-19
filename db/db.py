@@ -137,6 +137,31 @@ def get_all_users():
 
     return users
 
+
+def get_expired_users():
+    conn = sqlite3.connect("rd_users.db")
+    cursor = conn.cursor()
+
+    cursor.execute("SELECT id FROM users WHERE status = ?", ("expired",))
+    expired_ids = cursor.fetchall()
+
+    conn.close()
+
+    return expired_ids
+
+
+def get_trial_users():
+    conn = sqlite3.connect("rd_users.db")
+    cursor = conn.cursor()
+
+    cursor.execute("SELECT id FROM users WHERE status = ?", ("trial",))
+    trial_ids = cursor.fetchall()
+
+    conn.close()
+
+    return trial_ids
+    
+
 def delete_user_by_id(id):
     """
     """
@@ -177,6 +202,8 @@ def verify_subscription(id):
     if user[1] != "paid":
         return False
     
+    conn.close()
+
     return True
 
 
