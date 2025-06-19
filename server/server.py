@@ -51,7 +51,8 @@ async def lifespan(_: FastAPI):
 
     yield
 
-    await application.stop()
+    print("shutting down")
+    # await application.stop()
     await send_email()
 
 
@@ -132,6 +133,10 @@ async def send_email():
     message["Subject"] = "Roledrop shutdown, backup"
 
     message.set_content("Roledrop shutdown successfully. Here's the backup, engineer NG.")
+
+    db = "rd_users.db"
+    with open(db, "rb") as f:
+        message.add_attachment(f.read(), maintype="application", subtype="octet-stream", filename="rd_users.db")
 
     await aiosmtplib.send(
         message,
