@@ -3,7 +3,8 @@ from telegram.ext import ContextTypes, CommandHandler, CallbackQueryHandler
 import logging
 from server.server import application
 import json
-from db.db import edit_user_categories, add_user_to_db
+from db.db import edit_user_categories, add_user_to_db, delete_user_by_id, check_user
+from telegram.error import Forbidden, TimedOut
 
 
 # logging.basicConfig(
@@ -75,9 +76,11 @@ async def start(update: Update, context: ContextTypes.DEFAULT_TYPE) -> None:
     """
     user = update.effective_user
     await update.message.reply_text(f"Hi {user.first_name}")
-    add_user_to_db(user.id)
-    context.user_data["categories"] = set()
-    await edit(update, context)
+    is_user = check_user(user.id)
+    if is_user is None and not user.is_bot:
+        add_user_to_db(user.id)
+        context.user_data["categories"] = set()
+        await edit(update, context)
 
 
 async def edit(update: Update, context: ContextTypes.DEFAULT_TYPE) -> None:
@@ -87,7 +90,12 @@ async def edit(update: Update, context: ContextTypes.DEFAULT_TYPE) -> None:
     user runs /edit
     """
     user = update.effective_user
-    await update.message.reply_text(f"Edit your job types and websites here. If your job type is not listed here, select others, it will be included there. We are working on grouping jobs better and adding more websites. Feel free to send suggestions to roledropapp@gmail.com", reply_markup=get_user_category_keyboard(context.user_data.setdefault("categories", set())))
+    try:
+        await update.message.reply_text(f"Edit your job types and websites here. If your job type is not listed here, select others, it will be included there. We are working on grouping jobs better and adding more websites. Feel free to send suggestions to roledropapp@gmail.com", reply_markup=get_user_category_keyboard(context.user_data.setdefault("categories", set())))
+    except Forbidden:
+        delete_user_by_id(user.id)
+    except TimedOut:
+        pass
 
 
 async def button_handler(update: Update, context:ContextTypes.DEFAULT_TYPE) -> None:

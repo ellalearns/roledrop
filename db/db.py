@@ -123,3 +123,30 @@ def get_all_users():
     conn.close()
 
     return users
+
+def delete_user_by_id(id):
+    """
+    """
+    conn = sqlite3.connect("rd_users.db")
+    cursor = conn.cursor()
+
+    cursor.execute("DELETE FROM users WHERE id = ?", (id,))
+
+    conn.commit()
+    conn.close()
+
+
+def count_users():
+    """
+    """
+    conn = sqlite3.connect("rd_users.db")
+    cursor = conn.cursor()
+
+    cursor.execute("SELECT status, COUNT (*) FROM users GROUP BY status")
+    count = cursor.fetchall()
+    conn.close()
+
+    status_count = dict(count)
+    total_count = sum(status_count.values())
+
+    return total_count, status_count

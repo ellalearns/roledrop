@@ -7,15 +7,20 @@ from fastapi.middleware.cors import CORSMiddleware
 from http import HTTPStatus
 from telegram import Update
 from typing import List
-from deps.deps import parse_linkedin_jobs
-from db.db import get_all_users
+from deps.deps import parse_linkedin_jobs, format_text_as_html
+from db.db import get_all_users, delete_user_by_id, count_users
 import json
 from telegram.helpers import escape_markdown
-from telegram.error import BadRequest, TimedOut
+from telegram.error import BadRequest, TimedOut, Forbidden
+import aiosmtplib
+from email.message import EmailMessage
+import asyncio
 
 load_dotenv(override=True)
 BOT_TOKEN = os.getenv("BOT_TOKEN")
 WEBHOOK_URL = os.getenv("WEBHOOK_URL")
+APP_PASSWORD = os.getenv("APP_PASSWORD")
+EMAIL = os.getenv("EMAIL")
 
 application = (
     Application
@@ -47,6 +52,7 @@ async def lifespan(_: FastAPI):
     yield
 
     await application.stop()
+    await send_email()
 
 
 app = FastAPI(lifespan=lifespan)
@@ -75,6 +81,15 @@ async def telegram_webhook(request: Request):
     await application.process_update(update)
     return Response(status_code=HTTPStatus.OK)
 
+@app.get("/count/")
+async def user_count():
+    total_count, status_count = await asyncio.to_thread(count_users())
+    count_dict = {"total": total_count}
+    count_dict.update(status_count)
+    
+    return count_dict
+
+
 @app.post("/send_linkedin_jobs/")
 async def new_jobs(all_jobs: List[List[str]]):
     """
@@ -87,18 +102,43 @@ async def new_jobs(all_jobs: List[List[str]]):
         for cat in user_cats:
             available_jobs = grouped_jobs[cat]
             for job in available_jobs:
-                job_desc = escape_markdown("".join(job[5][:2000]).replace("\n\n", "\n"), version=2)
+                job_desc = format_text_as_html("".join(job[5][:2000]).replace("\n\n", "\n"))
                 try:
                     await application.bot.send_message(chat_id=user[0],
-                                                    text=f"""[{cat}]\n*{job[0]}*\n{job[-1]}\n{job[2]}\n{job[3]}\n{job[4]}\n{job_desc}\n{job[1]}
-                                                        """,
-                                                    parse_mode="Markdown")
-                except BadRequest as e:
+                                                    text=f"""[{cat}]\n<h2>{job[0]}</h2>\n<p>{job[-1]}</p>\n<p>{job[2]}</p>\n<p>{job[3]}</p>\n<p>{job[4]}</p>\n{job_desc}\n<p>{job[1]}</p>
+                                                        """, parse_mode="HTML")
+                except BadRequest:
                     await application.bot.send_message(chat_id=user[0],
                                                             text=f"""[{cat}]\n*{job[0]}*\n{job[-1]}\n{job[1]}
                                                         """,
                                                         parse_mode="Markdown")
-                except TimedOut as e:
+                except TimedOut:
                     print("telegram server timed out. moving on...")
+                except Forbidden:
+                    delete_user_by_id(user[0])
+
+
+async def send_email():
+    """
+    send db to email
+    """
+    EMAIL_ADDRESS = EMAIL
+    EMAIL_PASSWORD = APP_PASSWORD
+
+    message = EmailMessage()
+    message["From"] = EMAIL_ADDRESS
+    message["To"] = EMAIL_ADDRESS
+    message["Subject"] = "Roledrop shutdown, backup"
+
+    message.set_content("Roledrop shutdown successfully. Here's the backup, engineer NG.")
+
+    await aiosmtplib.send(
+        message,
+        hostname="smtp.gmail.com",
+        port=587,
+        start_tls=True,
+        username=EMAIL_ADDRESS,
+        password=EMAIL_PASSWORD
+    )
 
 

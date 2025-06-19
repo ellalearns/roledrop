@@ -48,3 +48,13 @@ def return_unseen_jobs(all_jobs, lw, lng):
     return unseen_jobs
             
 
+def format_text_as_html(text: str):
+    lines = text.split("\n")
+    html_lines = []
+    for line in lines:
+        words = line.strip().split()
+        if 0 < len(words) < 4:
+            html_lines.append(f"<h3>{line.strip()}</h3>")
+        else:
+            html_lines.append(f"<p>{line.strip()}</p>")
+    return "\n".join(html_lines)
