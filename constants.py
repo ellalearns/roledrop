@@ -6,7 +6,7 @@ categories_list = {
     "data entry": [],
     "design": [],
     "ai/ml engineering": [],
-    "social media managment": [],
+    "social media management": [],
     "project management": [],
     "others": [],
     }
