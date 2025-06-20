@@ -33,7 +33,7 @@ def parse_linkedin_jobs(jobs):
         elif "ai engineer" in str(job[0]).lower() or "ml engineer" in str(job[0]).lower():
             category_jobs["ai/ml engineering"].append(job)
         elif "social media" in str(job[0]).lower():
-            category_jobs["social media managment"].append(job)
+            category_jobs["social media management"].append(job)
         elif "project manager" in str(job[0]).lower():
             category_jobs["project management"].append(job)
         else:
