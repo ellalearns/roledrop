@@ -90,7 +90,7 @@ async def start(update: Update, context: ContextTypes.DEFAULT_TYPE) -> None:
         await edit(update, context)
         await update.message.reply_text(
             f"""Welcome to Roledrop 🤗\n\nRoledrop monitors job sites and sends you job notifications immeditely a new one is posted. \nRight now, we're monitoring LinkedIn. But we are working on adding other sites including Wellfound, X alerts, Y combinator, and individual Nigerian company job boards. \nEvery day, thousands of jobs are posted on LinkedIn and other job sites. \nYou now get to have a front seat and be among the first to submit an application and be considered.
-            \nRight Now, you're on a free trial that lasts for 2 days. \n After that, you can pay one thousand naira only (1,000) to have FULL access for 30 days. \n YOUR NEXT JOB IS ON THE WAY 💕\n\nSend /info for information about your roledrop profile.\n\nSend /pay to pay 1,000 naira for one month access (30 days).\nFinally, feel free to send us an email at roledropapp@gmail.com\n\nWelcome, once again.\nSettle in and wait for the job notifications to roll in. Enjoy 😉""",
+            \nRight Now, you're on a free trial that lasts for 2 days. \n After that, you can pay one thousand naira only (1,000) to have FULL access for 30 days. \n YOUR NEXT JOB IS ON THE WAY 💕\n\nSend /edit to choose the job categories to monitor.\nSend /info for information about your roledrop profile.\n\nSend /pay to pay 1,000 naira for one month access (30 days).\nFinally, feel free to send us an email at roledropapp@gmail.com\n\nWelcome, once again.\nSettle in and wait for the job notifications to roll in. Enjoy 😉""",
             reply_markup=keyboard
         )
 
