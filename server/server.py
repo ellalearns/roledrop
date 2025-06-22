@@ -127,7 +127,7 @@ async def process_send_jobs(all_jobs):
     for item, value in grouped_jobs.items():
         job_str = f"""{item}\n\n"""
         for job in value:
-            job_str += f"""💎💎  <b>{job[0]}</b>\n👉  {job[1]}\n📍  {job[2]}\n\n"""
+            job_str += f"""💎💎  <b>{job[0]}</b>\n👉  {job[1]}\n📍  {job[2]}\n📍  {job[3]}\n\n"""
         job_mes[item] = job_str
     
     users = get_all_users()
