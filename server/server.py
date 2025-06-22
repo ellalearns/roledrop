@@ -1,4 +1,4 @@
-from fastapi import FastAPI, Request, Response
+from fastapi import FastAPI, Request, Response, BackgroundTasks
 from contextlib import asynccontextmanager
 from dotenv import load_dotenv
 import os
@@ -11,10 +11,12 @@ from deps.deps import parse_linkedin_jobs, format_text_as_html
 from db.db import get_all_users, delete_user_by_id, count_users, complete_payment, set_expired, get_expired_users, get_trial_users
 import json
 from telegram.helpers import escape_markdown
-from telegram.error import BadRequest, TimedOut, Forbidden
+from telegram.error import BadRequest, TimedOut, Forbidden, RetryAfter
 import aiosmtplib
 from email.message import EmailMessage
 import asyncio
+import copy
+from constants import categories_list
 
 load_dotenv(override=True)
 BOT_TOKEN = os.getenv("BOT_TOKEN")
@@ -110,32 +112,57 @@ async def user_count():
 
 
 @app.post("/send_linkedin_jobs/")
-async def new_jobs(all_jobs: List[List[str]]):
+async def new_jobs(all_jobs: List[List[str]], background_tasks: BackgroundTasks):
+    """
+    """
+    background_tasks.add_task(process_send_jobs, all_jobs)
+    return HTTPStatus.OK 
+
+
+async def process_send_jobs(all_jobs):
     """
     """
     grouped_jobs = parse_linkedin_jobs(all_jobs)
+    job_mes = {}
+    for item, value in grouped_jobs.items():
+        job_str = f"""{item}\n\n"""
+        for job in value:
+            job_str += f"""💎💎  <b>{job[0]}</b>\n👉  {job[1]}\n📍  {job[2]}\n\n"""
+        job_mes[item] = job_str
     
     users = get_all_users()
+
     for user in users:
         user_cats = json.loads(user[5])
         for cat in user_cats:
-            available_jobs = grouped_jobs[cat]
-            for job in available_jobs:
-                job_desc = format_text_as_html("".join(job[5][:3000]).replace("\n", "\n"))
+            while True:
                 try:
-                    await application.bot.send_message(chat_id=user[0],
-                                                    text=f"""{cat}\n💎💎  <b>{job[0]}</b>\n👉  {job[-1]}\n📍  {job[2]}\n{job[3]}\n{job[4]}\n{job_desc}\n👉  {job[1]}\n
-                                                        """, parse_mode="HTML")
+                    await application.bot.send_message(
+                        chat_id=user[0],
+                        text=job_mes[cat][:4000],
+                        parse_mode="HTML"
+                    )
+                    break
                 except BadRequest:
-                    await application.bot.send_message(chat_id=user[0],
-                                                            text=f"""[{cat}]\n*{job[0]}*\n{job[-1]}\n{job[1]}
-                                                        """,
-                                                        parse_mode="Markdown")
-                except TimedOut:
-                    print("telegram server timed out. moving on...")
+                    try:
+                        await application.bot.send_message(
+                        chat_id=user[0],
+                        text=job_mes[cat][:4000]
+                    )
+                        break
+                    except:
+                        break
                 except Forbidden:
                     delete_user_by_id(user[0])
-                await asyncio.sleep(1)
+                    break
+                except RetryAfter as e:
+                    retry_secs = int(e.retry_after)
+                    print(f"flood control for {retry_secs}")
+                    await asyncio.sleep(retry_secs + 2)
+                except Exception as e:
+                    print(f"unexpected error: {e}")
+                    break
+    await asyncio.sleep(0.5)
 
 
 async def send_email():
