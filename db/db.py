@@ -129,7 +129,7 @@ def get_all_users():
     conn = sqlite3.connect("rd_users.db")
     cursor = conn.cursor()
 
-    cursor.execute("SELECT * FROM users WHERE status != ?", ("expired"))
+    cursor.execute("SELECT * FROM users WHERE status != ?", ("expired",))
     users = cursor.fetchall()
 
     # cursor.close()
