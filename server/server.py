@@ -137,11 +137,12 @@ async def process_send_jobs(all_jobs):
         for cat in user_cats:
             while True:
                 try:
-                    await application.bot.send_message(
+                    if len(job_mes) > 30:
+                        await application.bot.send_message(
                         chat_id=user[0],
                         text=job_mes[cat][:4000],
                         parse_mode="HTML"
-                    )
+                        )
                     break
                 except BadRequest:
                     try:

@@ -114,6 +114,7 @@ async def edit(update: Update, context: ContextTypes.DEFAULT_TYPE) -> None:
             text=edit_text,
             reply_markup=get_user_category_keyboard(context.user_data["categories"])
         )
+        return
     try:
         await update.message.reply_text(edit_text, reply_markup=get_user_category_keyboard(context.user_data["categories"]))
     except Forbidden:
