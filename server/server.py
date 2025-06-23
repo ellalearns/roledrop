@@ -204,6 +204,36 @@ async def complete_payment_be(request: Request):
     }
 
 
+@app.post("/send_message/")
+async def message_to_users(request: Request, background_tasks: BackgroundTasks):
+    data = await request.json()
+    text = data["text"]
+    background_tasks.add_task(message_users, text)
+
+
+async def message_users(text):
+    """
+    """
+    users = get_all_users()
+    for user in users:
+        try:
+            application.bot.send_message(
+                chat_id=user[0],
+                text=text
+            )
+        except Forbidden:
+            delete_user_by_id(user[0])
+        except RetryAfter as e:
+            retry_secs = e.retry_after
+            print(f"flood control for {retry_secs} seconds")
+            await asyncio.sleep(retry_secs + 2)
+            pass
+        except BadRequest:
+            break
+        except Exception as e:
+            print(f"unexpected error: {e}")
+
+
 @app.get("/expired/")
 async def remind_unpaid_users():
     """
