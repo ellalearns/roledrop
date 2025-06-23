@@ -137,7 +137,7 @@ async def process_send_jobs(all_jobs):
         for cat in user_cats:
             while True:
                 try:
-                    if len(job_mes) > 30:
+                    if len(job_mes[item]) > 30:
                         await application.bot.send_message(
                         chat_id=user[0],
                         text=job_mes[cat][:4000],
