@@ -128,7 +128,8 @@ async def process_send_jobs(all_jobs):
         job_str = f"""{item}\n\n"""
         for job in value:
             job_str += f"""💎💎  <b>{job[0]}</b>\n👉  {job[1]}\n📍  {job[2]}\n📍  {job[3]}\n\n"""
-        job_mes[item] = job_str
+        job_str_chunks = split_by_diamond_start(job_str)
+        job_mes[item] = job_str_chunks
     
     users = get_all_users()
 
@@ -137,12 +138,13 @@ async def process_send_jobs(all_jobs):
         for cat in user_cats:
             while True:
                 try:
-                    if len(job_mes[item]) > 30:
-                        await application.bot.send_message(
-                        chat_id=user[0],
-                        text=job_mes[cat][:4000],
-                        parse_mode="HTML"
-                        )
+                    if len(job_mes[cat][0]) > 30:
+                        for chunk in job_mes[cat]:
+                            await application.bot.send_message(
+                            chat_id=user[0],
+                            text=chunk,
+                            parse_mode="HTML"
+                            )
                     break
                 except BadRequest:
                     try:
@@ -255,3 +257,25 @@ async def remind_unpaid_users():
             reply_markup=keyboard
         )
 
+def split_by_diamond_start(text, base_limit=3900):
+    chunks = []
+    i = 0
+    n = len(text)
+
+    while i < n:
+        # Tentative end
+        end = min(i + base_limit, n)
+
+        # Look ahead for the next 💎 after base limit
+        diamond_pos = text.find("💎", end)
+
+        if diamond_pos == -1:
+            # No more 💎 ahead — take the rest
+            chunks.append(text[i:])
+            break
+
+        # Ensure 💎 is the start of the next chunk
+        chunks.append(text[i:diamond_pos])
+        i = diamond_pos
+
+    return chunks

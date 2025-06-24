@@ -81,6 +81,7 @@ async def start(update: Update, context: ContextTypes.DEFAULT_TYPE) -> None:
     """
     runs when user sends /start
     """
+    print("start")
     user = update.effective_user
     await update.message.reply_text(f"Hi {user.first_name}")
     is_user = check_user(user.id)
@@ -101,6 +102,7 @@ async def edit(update: Update, context: ContextTypes.DEFAULT_TYPE) -> None:
     or
     user runs /edit
     """
+    print("edit")
     user = update.effective_user
     edit_text = f"Edit your job types and websites here. If your job type is not listed here, select others, it will be included there. We are working on grouping jobs better and adding more websites. Feel free to send suggestions to roledropapp@gmail.com"
     edit_categories = get_user_categories(user.id)
@@ -127,6 +129,7 @@ async def pay(update: Update, context: ContextTypes.DEFAULT_TYPE, user_email: st
     """
     initialize paystack transaction
     """
+    print("pay")
     user = update.effective_user
     args = context.args
     query = update.callback_query
@@ -180,6 +183,7 @@ async def pay(update: Update, context: ContextTypes.DEFAULT_TYPE, user_email: st
 async def collect_email(update: Update, context:ContextTypes.DEFAULT_TYPE):
     """
     """
+    print("collect email")
     email = update.message.text
     try:
         email_validator.validate_email(email)
@@ -188,6 +192,7 @@ async def collect_email(update: Update, context:ContextTypes.DEFAULT_TYPE):
         return ConversationHandler.END
     
     await update.message.reply_text(f"✅ got it {email}, thanks. now to payment...")
+    print(f"{email}")
     await pay(update, context, email)
     
     return ConversationHandler.END
@@ -202,6 +207,7 @@ async def cancel(update: Update, cpntext:ContextTypes.DEFAULT_TYPE):
 async def timeout_handler(update:Update, context:ContextTypes.DEFAULT_TYPE):
     """
     """
+    print("cancel")
     try:
         await update.effective_chat.send_message("⏰ Timeout. Didn't receive your email.\nYou can restart payment anytime by sending /pay email")
     except Forbidden:
@@ -213,6 +219,7 @@ async def timeout_handler(update:Update, context:ContextTypes.DEFAULT_TYPE):
 async def verify_payment(update: Update, context: ContextTypes.DEFAULT_TYPE, chatId: str = "", userId: str = ""):
     """
     """
+    print("verify")
     if chatId != "":
         chatId = chatId
     else:
@@ -241,6 +248,7 @@ async def verify_payment(update: Update, context: ContextTypes.DEFAULT_TYPE, cha
 async def help(update: Update, context: ContextTypes.DEFAULT_TYPE):
     """
     """
+    print("help")
     info = "👉 /edit to edit your job categories\n👉 /info to get information about your roledrop profile\n👉 /pay to pay 1,000 naira for 30 days access\n👉 send an email to roledropapp@gmail.com if you run into any problems"
 
     if update.callback_query:
@@ -259,6 +267,7 @@ async def help(update: Update, context: ContextTypes.DEFAULT_TYPE):
 async def info(update: Update, context: ContextTypes.DEFAULT_TYPE):
     """
     """
+    print("info")
     user = update.effective_user
     user_info = get_user_info(user.id)
 
@@ -287,6 +296,7 @@ async def info(update: Update, context: ContextTypes.DEFAULT_TYPE):
 async def button_handler(update: Update, context:ContextTypes.DEFAULT_TYPE) -> None:
     """
     """
+    print("buttonpush")
     query = update.callback_query
     await query.answer()
 
@@ -334,6 +344,7 @@ async def button_handler(update: Update, context:ContextTypes.DEFAULT_TYPE) -> N
 async def handle_invalid_messages(update: Update, context: ContextTypes.DEFAULT_TYPE) -> None:
     """
     """
+    print("invalid")
     try:
         await update.message.reply_markdown("Invalid command 😥\n Try one of these", reply_markup=keyboard)
     except Forbidden:
