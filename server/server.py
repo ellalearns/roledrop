@@ -246,14 +246,14 @@ async def remind_unpaid_users():
     for id in ids:
         await application.bot.send_message(
             chat_id=int(id[0]),
-            text="Hi! \nA gentle reminder to subscribe and keep getting the latest jobs to apply to. \nBe among the first to apply for jobs and get considered for interviews. \n1,000 for one month. Enjoy 😉",
+            text="Hi! \nA Your free trial has expired, so you can't see any new jobs now. \n /pay to Pay one thousand naira today to get full access for 30 days. \nBe among the first to apply for jobs to get hired. \nSend us an email at roledropapp@gmail.com if you run into any problems. \n1,000 for one month.  \nEnjoy 😉",
             reply_markup=keyboard
         )
     ids = get_trial_users()
     for id in ids:
         await application.bot.send_message(
             chat_id=int(id[0]),
-            text="""Hi! Hope you're enjoying Roledrop 🤗\nIn a few days, your free trial will end. \nA gentle reminder to subscribe and keep getting the latest jobs to apply to. \nBe among the first to apply for jobs and get considered for interviews. \n1,000 for one month. Enjoy 😉""",
+            text="""Hi! Hope you're enjoying Roledrop 🤗\nIn two days, your free trial will end. \nA gentle reminder to subscribe and keep getting the latest jobs to apply to. \nBe among the first to apply for jobs and get considered for interviews. \n1,000 for one month. Enjoy 😉""",
             reply_markup=keyboard
         )
 
