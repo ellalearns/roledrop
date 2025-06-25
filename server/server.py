@@ -244,18 +244,24 @@ async def remind_unpaid_users():
     set_expired()
     ids = get_expired_users()
     for id in ids:
-        await application.bot.send_message(
+        try:
+            await application.bot.send_message(
             chat_id=int(id[0]),
-            text="Hi! \nA Your free trial has expired, so you can't see any new jobs now. \n /pay to Pay one thousand naira today to get full access for 30 days. \nBe among the first to apply for jobs to get hired. \nSend us an email at roledropapp@gmail.com if you run into any problems. \n1,000 for one month.  \nEnjoy 😉",
+            text="Hi! \nA Your free trial has expired. \nWe just sent out 100+ newly posted jobs, which you can't see, unfortunately. \n👉 /pay to Pay one thousand naira today to get full access for 30 days. \nBe among the first to apply for jobs to get hired. \nFeel free to send us an email at roledropapp@gmail.com. \n1,000 for one month.  \nEnjoy 😉",
             reply_markup=keyboard
-        )
+            )
+        except Forbidden as e:
+            delete_user_by_id(int(id[0]))
     ids = get_trial_users()
     for id in ids:
-        await application.bot.send_message(
+        try:
+            await application.bot.send_message(
             chat_id=int(id[0]),
             text="""Hi! Hope you're enjoying Roledrop 🤗\nIn two days, your free trial will end. \nA gentle reminder to subscribe and keep getting the latest jobs to apply to. \nBe among the first to apply for jobs and get considered for interviews. \n1,000 for one month. Enjoy 😉""",
             reply_markup=keyboard
-        )
+            )
+        except Forbidden as e:
+            delete_user_by_id(int(id[0]))
 
 def split_by_diamond_start(text, base_limit=3900):
     chunks = []
