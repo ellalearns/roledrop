@@ -220,7 +220,7 @@ async def message_users(text):
     users = get_all_users()
     for user in users:
         try:
-            application.bot.send_message(
+            await application.bot.send_message(
                 chat_id=user[0],
                 text=text
             )
